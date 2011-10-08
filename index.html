@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<title>The Devil's Dictionary</title>
+	<script src="js/zepto.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="js/data.js" type="text/javascript" charset="utf-8"></script>	
+	<script type="text/javascript" charset="utf-8">
+		$(document).ready(function(){
+			function showChapter(chapter, callback){
+				clearDisplay();	//clear current selection
+				var sortArray = [];
+				for( i = 0; i < localStorage.length; i++){
+					if(localStorage.getItem(localStorage.key(i)) != localStorage.key(i) && localStorage.key(i)[0] === chapter){ //find only words
+					//TODO - sort out reserved words somehow, author, title, version, etc
+						sortArray.push(localStorage.key(i));						
+					}
+				}
+				sortArray.sort();
+				for( i = 0; i < sortArray.length; i++ ){
+					$('#display').append('<h2 id="' + sortArray[i] + '">' + sortArray[i] + '</h2>' + localStorage.getItem(sortArray[i]));					
+				}
+				
+				if(callback){
+					window.location.hash = callback;
+				}
+				
+				//Navigation highlights
+				$('#' + chapter).addClass('selected');					
+			}			
+			
+			function clearDisplay(){
+				$('#display').html(''); //remove current selection's content				
+				$('#nav li a').each(function(){
+					if( $(this).hasClass('selected') ){
+						$(this).removeClass('selected');
+					}
+
+				})
+			}
+			
+			function init(){
+				indexMaker( bookData );
+				if(window.location.hash){ //see if an item is already selected
+
+					showChapter( window.location.hash.substr(1)[0], window.location.hash.substr(1) );
+				}
+				importData();				
+			}
+			
+			function indexMaker( array ){
+				//clumsy to load everything into an array and then just use it to sort, but there you go. 			
+				var sortArray = [];
+				for( i = 0; i < localStorage.length; i++){
+					if(localStorage.getItem(localStorage.key(i)) === localStorage.key(i)){ //find only letters
+						sortArray.push(localStorage.key(i));						
+					}
+				}
+				sortArray.sort();
+				for( i = 0; i < sortArray.length; i++ ){
+					$('ul#nav').append('<li><a href="#' + sortArray[i] + '" id="' + sortArray[i] + '">' + sortArray[i] + '</a></li>');
+				}							
+			}
+			
+			function importData( override ){
+
+				if(!localStorage.getItem('version') || override === 'true'){																			
+
+					localStorage.setItem('version', bookData[0].version);
+					localStorage.setItem('title', bookData[0].title);					
+					localStorage.setItem('author', bookData[0].author);
+					
+					//loop through and load the book here
+					$(bookData[0].chapters).each(function( index ){
+						localStorage.setItem( this.name, this.name );
+						$(bookData[0].chapters[index].content).each(function(){
+							localStorage.setItem( this.entry, this.content);
+						});
+					});
+				}else if(localStorage.getItem('version') === bookData[0].version){
+					return;
+				}else{
+					overwriteLocalData();
+					return;
+				}
+			}
+			
+			function overwriteLocalData(){
+				importData( 'true');				
+			}
+			
+			
+			function putData( key, value ){
+				localStorage.setItem(key, value);
+			}
+			
+			function matchSearch( value ){
+				$('ul#results').css('display', 'block');
+				$('ul#results').html('');//clear current results
+				if(value.length > 0 ){ //don't trigger on keyup from backspacing and clearing value
+					for(i = 0; i < localStorage.length; i++ ){
+						if( value === localStorage.key(i).slice(0, value.length) ){
+							$('ul#results').append( '<li><a href="#' + localStorage.key(i) + '" class="deflink">' + localStorage.key(i) + '</a></li>');
+						}
+					}					
+				}
+				$('.deflink').click(function(){
+					console.log(this);
+				})
+			}
+			
+			init();
+			$('#nav a').click(function(){ //chapter selection handler
+				var that = this.text;
+				showChapter( that );
+			});
+
+			
+			$('#terms').bind('keyup', function( event ){
+				matchSearch(event.target.value);
+				this.clear;
+			})
+			
+			
+			$('body').bind('click', function(){
+				$('#terms')[0].value = '';
+				$('ul#results').css('display', 'none');
+			})					
+			
+			
+		});
+	</script>
+	<style type="text/css" media="screen">
+		#display { clear:both; }
+		ul#nav li { float:left; list-style-type:none; padding-left:5px; }
+		ul#nav li a { display:block; padding:5px; }
+		ul#nav li a:hover { background:pink;}
+		ul#results { display:none; list-style-type:none; width:150px; padding-left:0; margin-left:0; border:1px solid #ccc; border-bottom:0;}
+		ul#results a { display:block; text-decoration:none; border-bottom:1px solid #ccc; }
+		ul#results a:hover { background:#ccc; color:#fff; }
+		.selected { background: red; display:block;padding:5px;}
+		
+	</style>
+</head>
+<body>
+	<form><input type="search" id="terms" placeholder="quick search" autocomplete="off" autocapitalize="off" autocorrect="off" /></form>
+	<ul id="results"></ul>
+<ul id="nav">
+</ul>
+<div id="display">
+	
+</div>
+
+</body>
+</html>
