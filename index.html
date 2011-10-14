@@ -18,8 +18,24 @@
 				}
 				sortArray.sort();
 				for( i = 0; i < sortArray.length; i++ ){
-					$('#display').append('<h2 id="' + sortArray[i] + '">' + sortArray[i] + '</h2>' + localStorage.getItem(sortArray[i]));					
+					try
+					{	if(JSON.parse(localStorage.getItem(sortArray[i])).entry === true){
+						if(JSON.parse(localStorage.getItem(sortArray[i])).fave){
+							console.log('faved');
+						}else{
+							$('#display').append('<h2 id="' + sortArray[i] + '">' + sortArray[i] + ' <a href="#" class="fave">fave</a></h2>' + JSON.parse(localStorage.getItem(sortArray[i])).content);			
+						}							
+					}
+
 				}
+				catch(err)
+				{
+					console.log(err);	
+				}
+					
+					
+					//console.log(JSON.parse(localStorage.getItem(sortArray[i])).content);
+				}//JSON.parse(localStorage.getItem('abasement')).content
 				
 				if(callback){
 					window.location.hash = callback;
@@ -74,7 +90,8 @@
 					$(bookData[0].chapters).each(function( index ){
 						localStorage.setItem( this.name, this.name );
 						$(bookData[0].chapters[index].content).each(function(){
-							localStorage.setItem( this.entry, this.content);
+							var setJSONKey = { 'content': this.content, 'fave': 0, 'entry' : true };
+							localStorage.setItem( this.entry, JSON.stringify(setJSONKey));
 						});
 					});
 				}else if(localStorage.getItem('version') === bookData[0].version){
@@ -83,6 +100,10 @@
 					overwriteLocalData();
 					return;
 				}
+			}
+			
+			function updateFave( item ){
+				
 			}
 			
 			function overwriteLocalData(){
@@ -105,7 +126,8 @@
 					}					
 				}
 				$('.deflink').click(function(){
-					console.log(this);
+					showChapter(this.text);
+					return false;
 				})
 			}
 			
