@@ -128,7 +128,7 @@ $(document).ready(function() {
         localStorage.setItem(key, value);
     }
 
-    function matchSearch(value) {
+    function matchSearch(value) { //Displays and handles clicks on quick-search items
         $('ul#results').css('display', 'block');
         $('ul#results').html('');
         //clear current results
@@ -140,11 +140,18 @@ $(document).ready(function() {
 					if(localStorage.key(i) === localStorage.key(i).slice(0, value.length)){
 						chapterTitle = localStorage.key(i);
 					}else{
-						$('ul#results').append('<li><a href="#' + localStorage.key(i) + '" class="deflink">' + localStorage.key(i) + '</a></li>');	
+						try
+						{
+						 	if(JSON.parse(localStorage.getItem(localStorage.key(i))).entry){ //make sure the item has a JSON value, or it's not an entry to be listed
+								$('ul#results').append('<li><a href="#' + localStorage.key(i) + '" class="deflink">' + localStorage.key(i) + '</a></li>');		
+							}	
+						}
+						catch( err ){}
+						
 					}                    
                 }
             }
-			$('ul#results').prepend('<li><a href="#' + chapterTitle + '" class="deflink">' + 'All &lsquo;' + chapterTitle.toUpperCase() + '&rsquo; definitions</a></li>');	
+			$('ul#results').prepend('<li><a href="#' + chapterTitle + '" class="deflink chapter">' + 'All &lsquo;' + chapterTitle.toUpperCase() + '&rsquo; definitions</a></li>');	
         }
         $('.deflink').click(function( e ) {
 			showChapter(this.hash.substr(1).charAt(0), this.hash.substr(1));
