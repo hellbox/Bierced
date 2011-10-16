@@ -1,13 +1,13 @@
 $(document).ready(function() {
+	
+/* FUNCTIONS */
 
-	function showChapter( chapter, callback ) {
-		clearDisplay();
-		
-		//clear current selection
+	function showChapter( chapter, callback ) { //use callback for forcing URL for reloads
+		clearDisplay(); //clear current selection
 		var sortArray = [];
 		for (i = 0; i < localStorage.length; i++) {
-			if (localStorage.getItem(localStorage.key(i)) != localStorage.key(i) && localStorage.key(i)[0] === chapter) {
-				//find only words			
+			//make sure item is not a letter but an actual item
+			if (localStorage.getItem(localStorage.key(i)) != localStorage.key(i) && localStorage.key(i)[0] === chapter) {	
 				sortArray.push(localStorage.key(i));
 			}
 		}
@@ -40,6 +40,7 @@ $(document).ready(function() {
 		})
 	}
 
+
     function clearDisplay() {
         $('#display').html('');
         //remove current selection's content				
@@ -51,6 +52,7 @@ $(document).ready(function() {
         })
     }
 
+
     function init() {
         indexMaker(bookData);
         if (window.location.hash) {
@@ -60,8 +62,9 @@ $(document).ready(function() {
         importData();
     }
 
+
     function indexMaker(array) {
-        //clumsy to load everything into an array and then just use it to sort, but there you go. 			
+        //clumsy to load everything into an array and then just use it only for sorting, but there you go. 			
         var sortArray = [];
         for (i = 0; i < localStorage.length; i++) {
             if (localStorage.getItem(localStorage.key(i)) === localStorage.key(i)) {
@@ -77,7 +80,6 @@ $(document).ready(function() {
 
 
     function importData(override) {
-
         if (!localStorage.getItem('version') || override === 'true') {
             localStorage.setItem('version', bookData[0].version);
             localStorage.setItem('title', bookData[0].title);
@@ -106,7 +108,6 @@ $(document).ready(function() {
 
     function updateFave(item) {
 		var tempValue = JSON.parse(localStorage.getItem(localStorage.key(item)));
-		console.log(tempValue.fave);
 		if(tempValue.fave){
 			tempValue.fave = 0;				
 			$('#' + item + ' a').text('fave');
@@ -123,7 +124,6 @@ $(document).ready(function() {
         importData('true');
     }
 
-
     function putData(key, value) {
         localStorage.setItem(key, value);
     }
@@ -134,23 +134,35 @@ $(document).ready(function() {
         //clear current results
         if (value.length > 0) {
             //don't trigger on keyup from backspacing and clearing value
+			var chapterTitle;
             for (i = 0; i < localStorage.length; i++) {
                 if (value === localStorage.key(i).slice(0, value.length)) {
-                    $('ul#results').append('<li><a href="#' + localStorage.key(i) + '" class="deflink">' + localStorage.key(i) + '</a></li>');
+					if(localStorage.key(i) === localStorage.key(i).slice(0, value.length)){
+						chapterTitle = localStorage.key(i);
+					}else{
+						$('ul#results').append('<li><a href="#' + localStorage.key(i) + '" class="deflink">' + localStorage.key(i) + '</a></li>');	
+					}                    
                 }
             }
+			$('ul#results').prepend('<li><a href="#' + chapterTitle + '" class="deflink">' + 'All &lsquo;' + chapterTitle.toUpperCase() + '&rsquo; definitions</a></li>');	
         }
         $('.deflink').click(function( e ) {
-            showChapter(this.text);
-            e.preventDefault();
+			showChapter(this.hash.substr(1).charAt(0), this.hash.substr(1));
+			
         })
     }
 
+
     init();
+
+
+/* EVENT HANDLERS */
+
     $('#nav a').click(function( e ) {
         //chapter selection handler
+		console.log(chapterTitle);
         var that = this.text;
-        showChapter(that);
+        showChapter(that, that);
     });
 
 
