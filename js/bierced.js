@@ -1,7 +1,6 @@
 $(document).ready(function() {
 	
 /* FUNCTIONS */
-
 	function showChapter( chapter, callback ) { //use callback for forcing URL for reloads
 		clearDisplay(); //clear current selection
 		var sortArray = [];
@@ -9,7 +8,6 @@ $(document).ready(function() {
 			//make sure item is not a letter but an actual item
 			if (localStorage.getItem(localStorage.key(i)) != localStorage.key(i) && localStorage.key(i)[0] === chapter) {	
 				sortArray.push(localStorage.key(i));
-
 			}
 		}
 		sortArray.sort();
@@ -26,7 +24,6 @@ $(document).ready(function() {
 			}
 			catch(err)
 			{
-				console.log(err);
 			}
 		}
 		if (callback) {
@@ -119,21 +116,7 @@ $(document).ready(function() {
 			tempValue.fave = 0;
 			$('#' + item + ' a').text('fave');
 		}
-		localStorage.setItem( item, JSON.stringify(tempValue));
-		
-		
-		// if(tempValue.fave === 1){
-		// 	console.log(item + ' being switched from 1 to 0', tempValue);
-		// 	tempValue.fave = 0;	
-		// 	console.log(tempValue);			
-		// 	$('#' + item + ' a').text('fave');
-		// }else if(tempValue.fave === 0){
-		// 	console.log(item + ' being switched from 0 to 1', tempValue);			
-		// 	tempValue.fave = 1;		
-		// 	console.log(tempValue);
-		// 	$('#' + item + ' a').text('unfave');
-		// }
-		//localStorage.setItem( item, JSON.stringify(tempValue));	
+		localStorage.setItem( item, JSON.stringify(tempValue));		
     }
 
     function overwriteLocalData() {
@@ -200,6 +183,4 @@ $(document).ready(function() {
         $('ul#results').css('display', 'none');
 		e.preventDefault();
     })
-
-
 });
