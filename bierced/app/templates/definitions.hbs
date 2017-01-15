@@ -1,0 +1,24 @@
+{{outlet}}
+
+<div>
+	<div></div>
+	<h2>Beirced</h2>
+	<p>Here is the Devil's Dictionary</p>
+	{{#link-to 'about' class="button"}}
+		About
+	{{/link-to}}
+</div>
+
+{{#each model as |definitions|}}
+	{{#each definitions.chapters as |chapters|}}
+		<h3 class="letter">{{ chapters.name }}</h3>
+		{{#each chapters.content as |item|}}
+		<article>
+		<dl class="definition">
+			<dt>{{ item.entry }}</dt>
+			<dd><em>{{ item.article }}</em> {{{ item.content }}}</dd>
+		</dl>
+		</article>			
+		{{/each}}
+	{{/each}}
+{{/each}}
